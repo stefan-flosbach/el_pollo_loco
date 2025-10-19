@@ -28,6 +28,10 @@ h2 {
 
 }
 
+.legend {
+    display: flex;
+}
+
 canvas {
     background-color: black;
     display: block;
