@@ -30,7 +30,7 @@ class World {
     }
 
     checkThrowObjects() {
-        if(this.keyboard.D) {
+        if (this.keyboard.D) {
             let bottle = new ThrowableObject(this.character.x + 100, this.character.y + 100);
             this.throwableObjects.push(bottle);
         }
@@ -50,28 +50,24 @@ class World {
 
         this.ctx.translate(this.camera_x, 0);
 
-// 🌥 Wolken bewegen:
-    this.level.clouds.forEach(cloud => {
-        cloud.moveLeft();
-        if (cloud.x < -cloud.width) {
-            cloud.x = 2000 + Math.random() * 500;
-        }
-    });
-
-
-
+        // 🌥 Wolken bewegen:
+        this.level.clouds.forEach(cloud => {
+            cloud.moveLeft();
+            if (cloud.x < -cloud.width) {
+                cloud.x = 2000 + Math.random() * 500;
+            }
+        });
 
         this.addObjectsToMap(this.level.backgroundObjects);
+
+        this.addObjectsToMap(this.level.clouds);
+        this.addToMap(this.character);
+        this.addObjectsToMap(this.level.enemies);
+        this.addObjectsToMap(this.throwableObjects);
 
         this.ctx.translate(-this.camera_x, 0); // Back
         this.addToMap(this.statusBar);
         this.ctx.translate(this.camera_x, 0); // Forwards
-
-
-        this.addToMap(this.character);
-        this.addObjectsToMap(this.level.clouds);
-        this.addObjectsToMap(this.level.enemies);
-        this.addObjectsToMap(this.throwableObjects);
 
         this.ctx.translate(-this.camera_x, 0);
 
