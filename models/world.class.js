@@ -46,6 +46,14 @@ class World {
                 this.statusBarHealth.setPercentage(this.character.energy);
             }
         });
+
+        this.level.bottles.forEach((bottle, index) => {
+            if (this.character.isColliding(bottle)) {
+                this.level.bottles.splice(index, 1); // Flasche entfernen
+                this.statusBarBottles.setPercentage(this.statusBarBottles.percentage + 10); // Fortschritt +10%
+            }
+        });
+
     }
 
     draw() {
@@ -65,6 +73,7 @@ class World {
 
         this.addObjectsToMap(this.level.clouds);
         this.addToMap(this.character);
+        this.addObjectsToMap(this.level.bottles);
         this.addObjectsToMap(this.level.enemies);
         this.addObjectsToMap(this.throwableObjects);
 
