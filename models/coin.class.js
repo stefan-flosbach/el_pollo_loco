@@ -1,7 +1,7 @@
 class Coin extends MovableObject {
     width = 60;
     height = 60;
-    y = 360;
+    y = 375;
 
     constructor(x) {
         super();

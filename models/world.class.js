@@ -28,15 +28,23 @@ class World {
         setInterval(() => {
 
             this.checkCollisions();
-            this.checkThrowObjects();
+            /*this.checkThrowObjects();*/
         }, 200);
     }
 
-    checkThrowObjects() {
-        if (this.keyboard.D) {
+    /*checkThrowObjects() {
+        if (this.keyboard.D && this.statusBarBottles.percentage > 0) {
             let bottle = new ThrowableObject(this.character.x + 100, this.character.y + 100);
             this.throwableObjects.push(bottle);
+            this.statusBarBottles.setPercentage(this.statusBarBottles.percentage - 10);
         }
+    }*/
+
+    throwBottle() {
+        if (this.statusBarBottles.percentage <= 0) return;
+        let bottle = new ThrowableObject(this.character.x + 100, this.character.y + 100);
+        this.throwableObjects.push(bottle);
+        this.statusBarBottles.setPercentage(this.statusBarBottles.percentage - 10);
     }
 
     checkCollisions() {
@@ -50,7 +58,7 @@ class World {
         this.level.bottles.forEach((bottle, index) => {
             if (this.character.isColliding(bottle)) {
                 this.level.bottles.splice(index, 1); // Flasche entfernen
-                this.statusBarBottles.setPercentage(this.statusBarBottles.percentage + 10); // Fortschritt +10%
+                this.statusBarBottles.setPercentage(this.statusBarBottles.percentage + 10);
             }
         });
 

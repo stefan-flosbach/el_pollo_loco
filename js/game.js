@@ -28,11 +28,14 @@ window.addEventListener("keydown", (e) => {
     }
     if (e.keyCode == 68) {
         keyboard.D = true;
+        if (world && world.statusBarBottles.percentage > 0) { // um Timingproblem beim Druck auf D zu vermeiden
+            world.throwBottle();
+        }
     }
 
-    // console.log(e.key);   
+        // console.log(e.key);   
 
-});
+    });
 
 window.addEventListener("keyup", (e) => {
     if (e.keyCode == 39) {
