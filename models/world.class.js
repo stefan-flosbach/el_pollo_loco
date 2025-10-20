@@ -47,7 +47,7 @@ class World {
         this.statusBarBottles.setPercentage(this.statusBarBottles.percentage - 10);
     }
 
-    checkCollisions() {
+    /*checkCollisions() {
         this.level.enemies.forEach((enemy) => {
             if (this.character.isColliding(enemy)) {
                 this.character.hit();
@@ -68,7 +68,34 @@ class World {
                 this.statusBarCoins.setPercentage(this.statusBarCoins.percentage + 10); // Fortschritt +10%
             }
         });
+    }*/
+
+    checkCollisionWithObjects(objects, statusBar, amount = 10) {
+        objects.forEach((obj, index) => {
+            if (this.character.isColliding(obj)) {
+                objects.splice(index, 1);
+                if (statusBar) {
+                    statusBar.setPercentage(Math.min(statusBar.percentage + amount, 100));
+                }
+            }
+        });
     }
+
+    checkCollisions() {
+        this.level.enemies.forEach((enemy) => {
+            if (this.character.isColliding(enemy)) {
+                this.character.hit();
+                this.statusBarHealth.setPercentage(this.character.energy);
+            }
+        });
+
+        // Flaschen aufsammeln
+        this.checkCollisionWithObjects(this.level.bottles, this.statusBarBottles, 10); // +10% pro Flasche
+
+        // Coins aufsammeln
+        this.checkCollisionWithObjects(this.level.coins, this.statusBarCoins, 10); // +10% pro Coin
+    }
+
 
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
