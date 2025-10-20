@@ -54,6 +54,12 @@ class World {
             }
         });
 
+        this.level.coins.forEach((coin, index) => {
+            if (this.character.isColliding(coin)) {
+                this.level.coins.splice(index, 1); // Coin entfernen
+                this.statusBarCoins.setPercentage(this.statusBarCoins.percentage + 10); // Fortschritt +10%
+            }
+        });
     }
 
     draw() {
@@ -74,6 +80,7 @@ class World {
         this.addObjectsToMap(this.level.clouds);
         this.addToMap(this.character);
         this.addObjectsToMap(this.level.bottles);
+        this.addObjectsToMap(this.level.coins);
         this.addObjectsToMap(this.level.enemies);
         this.addObjectsToMap(this.throwableObjects);
 
