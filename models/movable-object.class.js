@@ -16,18 +16,27 @@ class MovableObject extends DrawableObject {
     }
 
     isAboveGround() {
-        if(this instanceof ThrowableObject) {
+        if (this instanceof ThrowableObject) {
             return true;
-            } else {
-        return this.y < 143;
-    }}
+        } else {
+            return this.y < 143;
+        }
+    }
 
     // character.isColliding(chicken);
     isColliding(mo) {
-        return this.x + this.width > mo.x &&
-            this.y + this.height > mo.y &&
-            this.x < mo.x &&
-            this.y < mo.y + mo.height;
+        // Falls offset nicht gesetzt ist, nutze 0
+        const offset1 = this.offset || { top: 0, right: 0, bottom: 0, left: 0 };
+        const offset2 = mo.offset || { top: 0, right: 0, bottom: 0, left: 0 };
+
+        return this.x + this.offset.left + this.width - this.offset.right - this.offset.left > mo.x + mo.offset.left &&
+            this.y + this.offset.top + this.height - this.offset.top - this.offset.bottom > mo.y + mo.offset.top &&
+            this.x + this.offset.left < mo.x + mo.offset.left + mo.width - mo.offset.left - mo.offset.right &&
+            this.y + this.offset.top < mo.y + mo.offset.top + mo.height - mo.offset.top - mo.offset.bottom;
+        /* return this.x + this.offset.left < mo.x + mo.width - mo.offset.right &&
+    this.x + this.width - this.offset.right > mo.x + mo.offset.left &&
+    this.y + this.offset.top < mo.y + mo.height - mo.offset.bottom &&
+    this.y + this.height - this.offset.bottom > mo.y + mo.offset.top;*/
     }
 
     hit() {

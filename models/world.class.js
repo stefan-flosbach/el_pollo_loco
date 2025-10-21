@@ -47,29 +47,6 @@ class World {
         this.statusBarBottles.setPercentage(this.statusBarBottles.percentage - 10);
     }
 
-    /*checkCollisions() {
-        this.level.enemies.forEach((enemy) => {
-            if (this.character.isColliding(enemy)) {
-                this.character.hit();
-                this.statusBarHealth.setPercentage(this.character.energy);
-            }
-        });
-
-        this.level.bottles.forEach((bottle, index) => {
-            if (this.character.isColliding(bottle)) {
-                this.level.bottles.splice(index, 1); // Flasche entfernen
-                this.statusBarBottles.setPercentage(this.statusBarBottles.percentage + 10);
-            }
-        });
-
-        this.level.coins.forEach((coin, index) => {
-            if (this.character.isColliding(coin)) {
-                this.level.coins.splice(index, 1); // Coin entfernen
-                this.statusBarCoins.setPercentage(this.statusBarCoins.percentage + 10); // Fortschritt +10%
-            }
-        });
-    }*/
-
     checkCollisionWithObjects(objects, statusBar, amount = 10) {
         objects.forEach((obj, index) => {
             if (this.character.isColliding(obj)) {
@@ -83,7 +60,7 @@ class World {
 
     checkCollisions() {
         this.level.enemies.forEach((enemy) => {
-            if (this.character.isColliding(enemy)) {
+            if (this.character.isColliding(enemy) && !this.character.isHurt()) {
                 this.character.hit();
                 this.statusBarHealth.setPercentage(this.character.energy);
             }
