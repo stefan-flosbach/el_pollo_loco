@@ -22,6 +22,8 @@ class World {
 
     setWorld() {
         this.character.world = this;
+
+        this.level.enemies.forEach(e => e.world = this);
     }
 
     run() {

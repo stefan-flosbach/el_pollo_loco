@@ -1,8 +1,10 @@
 class Endboss extends MovableObject {
 
+groundY = 50;
+
     height = 400;
     width = 300;
-    y = 50;
+    y = this.groundY;
 
     offset = {
         top: 100,
@@ -23,9 +25,12 @@ class Endboss extends MovableObject {
     ];
 
     constructor() {
-        super().loadImage(this.IMAGES_WALKING[0]);
+        super();
+        this.loadImage(this.IMAGES_WALKING[0]);
         this.loadImages(this.IMAGES_WALKING);
         this.x = 2500;
+        this.speed = 0.5;
+        this.applyGravity();
         this.animate();
     }
 
@@ -33,5 +38,29 @@ class Endboss extends MovableObject {
         setInterval(() => {
             this.playAnimation(this.IMAGES_WALKING);
         }, 300);
+
+        setInterval(() => {
+            if (!this.world) return;
+
+            const character = this.world.character;
+            const distance = this.x - character.x;
+
+            this.moveLeft();
+
+            // Direkt die Bodenhöhe prüfen (y = 50 ist Boden für Endboss)
+            if (distance < 300 && distance > 0 && this.y >= this.groundY) {
+                this.speed = 5;
+                this.jump();
+            } 
+
+            if (distance < - 0) {
+                this.speed = 0.5;
+            }
+
+        }, 1000 / 60);
+    }
+
+    jump() {
+        this.speedY = 40;
     }
 }
