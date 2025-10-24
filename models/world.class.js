@@ -62,10 +62,23 @@ class World {
 
     checkCollisions() {
         this.level.enemies.forEach((enemy) => {
-            if (this.character.isColliding(enemy) /*&& !this.character.isHurt()*/) {
+            /*if (this.character.isColliding(enemy)) {
+                this.character.hit();
+                this.statusBarHealth.setPercentage(this.character.energy);
+            } */
+
+            // Wenn der Enemy ein Endboss ist → sofort tot
+            if (enemy instanceof Endboss && this.character.isColliding(enemy)) {
+                this.character.energy = 0; // Lebensenergie auf 0
+                this.statusBarHealth.setPercentage(0);
+                this.character.die(); // Animation + Status
+            }
+            // Normale Gegner (z. B. Hühner)
+            else if (this.character.isColliding(enemy) /*&& !this.character.isHurt()*/) {
                 this.character.hit();
                 this.statusBarHealth.setPercentage(this.character.energy);
             }
+
         });
 
         // Flaschen aufsammeln

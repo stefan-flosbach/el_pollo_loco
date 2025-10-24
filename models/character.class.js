@@ -115,20 +115,6 @@ class Character extends MovableObject {
             this.world.camera_x = -this.x + 100;
         }, 1000 / 60);
 
-        /* setInterval(() => {
-             if (this.isDead()) {
-                 this.playAnimation(this.IMAGES_DEAD);
-             } else if (this.isHurt()) {
-                 this.playAnimation(this.IMAGES_HURT);
-             } else if (this.isAboveGround()) {
-                 this.playAnimation(this.IMAGES_JUMPING);
-             } else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
-                 this.playAnimation(this.IMAGES_WALKING);
-             } else {
-                 this.playAnimation(this.IMAGES_IDLE); // 👈 Wenn nichts gedrückt wird
-             }
-         }, 100); */
-
         setInterval(() => {
             const now = Date.now();
 
@@ -147,7 +133,7 @@ class Character extends MovableObject {
                 this.playAnimation(this.IMAGES_JUMPING);
             } else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
                 this.playAnimation(this.IMAGES_WALKING);
-            } else if (idleDuration > 3000) { // länger als 3 Sekunden still
+            } else if (idleDuration > 5000) { // länger als 3 Sekunden still
                 this.playAnimation(this.IMAGES_LONG_IDLE);
             } else {
                 this.playAnimation(this.IMAGES_IDLE);
@@ -159,5 +145,12 @@ class Character extends MovableObject {
 
     jump() {
         this.speedY = 30;
+    }
+
+    die() {
+        this.energy = 0;
+        this.speed = 0;
+        this.speedY = 0;
+        this.playAnimation(this.IMAGES_DEAD);
     }
 }
