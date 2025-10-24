@@ -147,10 +147,33 @@ class Character extends MovableObject {
         this.speedY = 30;
     }
 
-    die() {
+
+   die() {
+        if (this.isDead()) return;
+
         this.energy = 0;
         this.speed = 0;
         this.speedY = 0;
         this.playAnimation(this.IMAGES_DEAD);
+        this.applyGravity();
+
+        let fallSpeed = 2.5; // Sichtbare Fallgeschwindigkeit
+
+        const fall = () => {
+            this.y += fallSpeed;
+
+            if (this.y < 480) { // Sichtbarer Bereich (je nach Canvas-Höhe anpassen)
+                requestAnimationFrame(fall);
+            } else {
+                // Wenn Figur unten aus dem Canvas gefallen ist:
+                if (this.world) {
+                    this.world.startYouLostSequence();
+                }
+            }
+        };
+
+        requestAnimationFrame(fall);
     }
+
+
 }
