@@ -57,29 +57,50 @@ class World {
     checkCollisions() {
         this.level.enemies.forEach((enemy) => {
 
-            // Wenn der Enemy ein Endboss ist → sofort tot
-
-
+            // Wenn Endboss getroffen und Charakter stirbt
             if (enemy instanceof Endboss && this.character.isColliding(enemy)) {
-                this.statusBarHealth.setPercentage(0);
-                this.character.energy = 0;
-                this.character.die();
+                if (!this.character.dead) {
+                    this.statusBarHealth.setPercentage(0);
+                    this.character.energy = 0;
+                    this.character.die();
+                }
             }
 
 
-            // Normale Gegner (z. B. Hühner)
-            else if (this.character.isColliding(enemy) /*&& !this.character.isHurt()*/) {
+
+            // Normale Gegner
+            else if (this.character.isColliding(enemy)) {
                 this.character.hit();
                 this.statusBarHealth.setPercentage(this.character.energy);
 
-                // Wenn Energie nach dem Hit 0 ist → sterben
-                if (this.character.energy <= 0) {
+                if (this.character.energy <= 0 && !this.character.dead) {
                     this.character.die();
                 }
+            }
 
+            // Siegbedingung (Endboss tot)
+            if (enemy instanceof Endboss && enemy.isDead && !this.character.dead && !this.endbossDefeated) {
+                this.endbossDefeated = true; // verhindert mehrfaches Auslösen
+
+                // Nach 3 Sekunden You-Won-Endscreen starten
+                setTimeout(() => {
+                    this.startYouWonSequence();
+                }, 3000);
             }
 
         });
+
+        // Flaschen treffen Endboss
+        this.throwableObjects.forEach((bottle, index) => {
+            this.level.enemies.forEach((enemy) => {
+                if (enemy instanceof Endboss && !enemy.isDead && bottle.isColliding(enemy)) {
+                    enemy.hitByBottle(); // fügt Schaden zu
+                    this.throwableObjects.splice(index, 1); // Flasche entfernen
+                    this.statusBarEndboss.setPercentage(100 - enemy.hitCount * 20); // 5 Treffer = 0%
+                }
+            });
+        });
+
 
         // Flaschen aufsammeln
         this.checkCollisionWithObjects(this.level.bottles, this.statusBarBottles, 10); // +10% pro Flasche
@@ -170,14 +191,14 @@ class World {
         // Canvas löschen
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        // 1️⃣ Zuerst "You lost" anzeigen
+        // Zuerst "You lost" anzeigen
         let imgLost = new Image();
         imgLost.src = '../img/You won, you lost/You lost.png';
         imgLost.onload = () => {
             this.ctx.drawImage(imgLost, 0, 0, this.canvas.width, this.canvas.height);
         };
 
-        // 2️⃣ Nach 3 Sekunden "Game over" anzeigen
+        // Nach 3 Sekunden "Game over" anzeigen
         setTimeout(() => {
             let imgGameOver = new Image();
             imgGameOver.src = '../img/You won, you lost/Game over.png';
@@ -208,6 +229,25 @@ class World {
             });
         }, 800);
     }
+
+    startYouWonSequence() {
+        if (this.gameStopped) return;
+        this.gameStopped = true;
+
+        // You won anzeigen
+        this.fadeInScreen('../img/You won, you lost/You won A.png', () => {
+            // Nach 3 Sekunden Game Over Screen anzeigen
+            setTimeout(() => {
+                this.fadeInScreen('../img/You won, you lost/Game over A.png', () => {
+                    // Nach 2 Sekunden Restart Button zeigen
+                    setTimeout(() => {
+                        this.showRestartButton();
+                    }, 2000);
+                });
+            }, 3000);
+        });
+    }
+
 
     /**
      * Blendet ein Bild sanft in den Canvas ein (Fade-in)
@@ -243,12 +283,8 @@ class World {
         };
     }
 
-    /**
-     * Zeigt einen Restart-Button auf dem Canvas an.
-     */
-    /**
-     * Zeigt einen dezenten Restart-Button mit Hover-Effekt auf dem Canvas.
-     */
+    // Zeigt einen Restart-Button auf dem Canvas an.
+
     showRestartButton() {
         const baseWidth = 160;
         const baseHeight = 50;
