@@ -2,6 +2,20 @@ let canvas;
 let world;
 let keyboard = new Keyboard();
 
+// Startscreen Button
+window.addEventListener('DOMContentLoaded', () => {
+    const startButton = document.getElementById('startButton');
+    const startScreen = document.getElementById('startscreen');
+
+    startButton.addEventListener('click', () => {
+        // Startscreen ausblenden
+        startScreen.style.display = 'none';
+
+        // Init Game starten
+        init();
+    });
+});
+
 function init() {
     canvas = document.getElementById('canvas');
     world = new World(canvas, keyboard);
@@ -33,9 +47,9 @@ window.addEventListener("keydown", (e) => {
         }
     }
 
-        // console.log(e.key);   
+    // console.log(e.key);   
 
-    });
+});
 
 window.addEventListener("keyup", (e) => {
     if (e.keyCode == 39) {

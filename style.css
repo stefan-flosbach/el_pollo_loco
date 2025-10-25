@@ -19,13 +19,51 @@ body {
 h1 {
     font-size: 60px;
     letter-spacing: 6px;
-    text-shadow: 3px 3px 3px rgba(0,0,0,0.5);
+    text-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
 }
 
 h2 {
     font-size: 28px;
     letter-spacing: 3px;
 
+}
+
+/* Startscreen über alles */
+#startscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../img/9_intro_outro_screens/start/startscreen_1.png');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    /* horizontal zentrieren */
+    align-items: flex-start;
+    /* Button oben */
+    padding-top: 50px;
+    /* Abstand vom oberen Rand */
+    z-index: 1000;
+    /* über Canvas */
+}
+
+/* Startbutton */
+#startButton {
+    padding: 20px 50px;
+    font-size: 32px;
+    font-family: 'zabras', Arial, sans-serif;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+#startButton:hover {
+    transform: scale(1.1);
+    background-color: rgba(255, 255, 255, 1);
 }
 
 .legend {
@@ -38,24 +76,24 @@ canvas {
 }
 
 /* Smartphones ------------*/
-    @media only screen and (max-width: 720px) {
-        canvas {
-            width: 100%;
-        }
+@media only screen and (max-width: 720px) {
+    canvas {
+        width: 100%;
     }
+}
 
 /* Smartphones ------------*/
-    @media only screen and (max-height: 480px) {
-        canvas {
-            height: 100vh;
-        }
+@media only screen and (max-height: 480px) {
+    canvas {
+        height: 100vh;
     }
+}
 
-    @media (max-height: 650px) {
-              h1 {
-            display: none;
-        }
+@media (max-height: 650px) {
+    h1 {
+        display: none;
     }
+}
 
 .rainbow-text {
     background: linear-gradient(90deg, red, orange, yellow, green, blue, purple, red);

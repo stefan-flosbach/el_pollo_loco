@@ -55,6 +55,23 @@ class World {
     }
 
     checkCollisions() {
+
+        // Wenn Pepe auf Chicken springt
+        this.level.enemies.forEach((enemy, index) => {
+            if (enemy instanceof Chicken && this.character.isColliding(enemy)) {
+                // Prüfen, ob Pepe von oben kommt (Y-Bewegung nach unten)
+                if (this.character.speedY < 0) {
+                    enemy.die(); // Chicken stirbt
+                    this.character.speedY = 20; // Pepe springt leicht nach oben
+                } else if (!enemy.isDead) {
+                    // Normale Kollision -> Schaden für Pepe
+                    this.character.hit();
+                    this.statusBarHealth.setPercentage(this.character.energy);
+                }
+            }
+        });
+
+
         this.level.enemies.forEach((enemy) => {
 
             // Wenn Endboss getroffen und Charakter stirbt
