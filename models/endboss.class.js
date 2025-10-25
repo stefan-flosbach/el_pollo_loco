@@ -61,6 +61,8 @@ class Endboss extends MovableObject {
         super();
         this.loadImage(this.IMAGES_WALKING[0]);
         this.loadImages(this.IMAGES_WALKING);
+        this.loadImages(this.IMAGES_ALERT);
+        this.loadImages(this.IMAGES_ATTACK);
         this.loadImages(this.IMAGES_HURT);
         this.loadImages(this.IMAGES_DEAD);
         this.x = 2500;
@@ -71,32 +73,40 @@ class Endboss extends MovableObject {
     }
 
     animate() {
+        // Animationen wechseln
         setInterval(() => {
             if (this.isDead) {
-                // Fixiert das letzte Bild
                 this.img = this.imageCache[this.IMAGES_DEAD[this.IMAGES_DEAD.length - 1]];
             } else if (this.hitCount > 0 && this.hitCount < 5) {
                 this.playAnimation(this.IMAGES_HURT);
             } else {
-                this.playAnimation(this.IMAGES_WALKING);
-            }
-        }, 300);
+                const distance = this.world ? this.x - this.world.character.x : 9999;
 
-        // Bewegungslogik
+                if (distance < 320) {
+                    this.playAnimation(this.IMAGES_ATTACK);
+                } else if (distance < 370) {
+                    this.playAnimation(this.IMAGES_ALERT);
+                } else {
+                    this.playAnimation(this.IMAGES_WALKING);
+                }
+            }
+        }, 150);
+
+        // Bewegungslogik bleibt, wie du sie hattest
         setInterval(() => {
-            if (!this.world || this.isDead) return; // Stoppt Bewegung nur, nicht das ganze Spiel
+            if (!this.world || this.isDead) return;
 
             const character = this.world.character;
             const distance = this.x - character.x;
 
             this.moveLeft();
 
-            if (distance < 300 && distance > 0 && this.y >= this.groundY) {
+            if (distance < 280 && distance > 0 && this.y >= this.groundY) {
                 this.speed = 5;
                 this.jump();
             }
 
-            if (distance < -0) {
+            if (distance <= 0) {
                 this.speed = 0.5;
             }
         }, 1000 / 60);
