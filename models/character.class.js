@@ -116,6 +116,9 @@ class Character extends MovableObject {
         }, 1000 / 60);
 
         setInterval(() => {
+
+            if (this.dead) return; // Wenn tot → keine weiteren Animationen
+
             const now = Date.now();
 
             // Prüfen, ob er sich bewegt
@@ -148,32 +151,49 @@ class Character extends MovableObject {
     }
 
 
-   die() {
-        if (this.isDead()) return;
+    die() {
+        if (this.dead) return; // Schon tot? Abbrechen.
 
         this.energy = 0;
         this.speed = 0;
         this.speedY = 0;
-        this.playAnimation(this.IMAGES_DEAD);
-        this.applyGravity();
 
-        let fallSpeed = 2.5; // Sichtbare Fallgeschwindigkeit
-
-        const fall = () => {
-            this.y += fallSpeed;
-
-            if (this.y < 480) { // Sichtbarer Bereich (je nach Canvas-Höhe anpassen)
-                requestAnimationFrame(fall);
+        // Todesframes einmalig durchspielen
+        let i = 0;
+        const animateDeath = () => {
+            if (i < this.IMAGES_DEAD.length) {
+                this.img = this.imageCache[this.IMAGES_DEAD[i]];
+                i++;
+                setTimeout(animateDeath, 120);
             } else {
-                // Wenn Figur unten aus dem Canvas gefallen ist:
-                if (this.world) {
-                    this.world.startYouLostSequence();
-                }
+                this.img = this.imageCache[this.IMAGES_DEAD[this.IMAGES_DEAD.length - 1]];
+
+                // Jetzt erst als tot markieren (damit Bild sicher sichtbar bleibt)
+                this.dead = true;
+
+                // Pepe fällt sichtbar aus dem Canvas
+                startFalling();
             }
         };
+        animateDeath();
 
-        requestAnimationFrame(fall);
+        const startFalling = () => {
+            const fallSpeed = 5;
+            const fall = () => {
+                this.y += fallSpeed;
+
+                if (this.y < this.world.canvas.height) {
+                    requestAnimationFrame(fall);
+                } else if (this.world) {
+                    this.world.startYouLostSequence();
+                }
+            };
+            requestAnimationFrame(fall);
+        };
     }
+
+
+
 
 
 }

@@ -58,18 +58,24 @@ class World {
         this.level.enemies.forEach((enemy) => {
 
             // Wenn der Enemy ein Endboss ist → sofort tot
+
+
             if (enemy instanceof Endboss && this.character.isColliding(enemy)) {
-                this.character.die();
                 this.statusBarHealth.setPercentage(0);
+                this.character.energy = 0;
+                this.character.die();
             }
-
-
 
 
             // Normale Gegner (z. B. Hühner)
             else if (this.character.isColliding(enemy) /*&& !this.character.isHurt()*/) {
                 this.character.hit();
                 this.statusBarHealth.setPercentage(this.character.energy);
+
+                // Wenn Energie nach dem Hit 0 ist → sterben
+                if (this.character.energy <= 0) {
+                    this.character.die();
+                }
 
             }
 
@@ -184,6 +190,7 @@ class World {
 
 
     startYouLostSequence() {
+        if (this.gameStopped) return;
         this.gameStopped = true;
 
         // Kleiner Moment warten, bis Pepe unten sichtbar ist
