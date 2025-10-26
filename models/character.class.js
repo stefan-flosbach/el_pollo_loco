@@ -1,7 +1,8 @@
 class Character extends MovableObject {
 
     height = 280;
-    y = 50;
+    y = 143; //50;
+    prevY = this.y; 
     speed = 5;
 
     offset = {
@@ -96,6 +97,9 @@ class Character extends MovableObject {
     animate() {
 
         setInterval(() => {
+
+            this.prevY = this.y;
+            
             if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
                 this.moveRight();
                 this.otherDirection = false;

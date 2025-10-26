@@ -3,8 +3,8 @@ class Chicken extends MovableObject {
     height = 70;
     width = 70;
 
-    isDead = false; // 🩸 Neues Flag
-    deadSince = 0;  // ⏱️ Zeitpunkt des Todes
+    isDead = false; // Neues Flag
+    deadSince = 0;  // Zeitpunkt des Todes
 
     offset = {
         top: 15,
