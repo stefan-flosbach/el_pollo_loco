@@ -54,53 +54,27 @@ class World {
     }
 
     checkCollisions() {
-        // --- 🥚 Chicken-Logik ---
-        this.level.enemies.forEach((enemy) => {
-            if (!(enemy instanceof Chicken)) return;
-            if (!this.character.isColliding(enemy)) return;
 
-            const charBottom = this.character.y + this.character.height - (this.character.offset?.bottom || 0);
-            const enemyTop = enemy.y + (enemy.offset?.top || 0);
-
-            const prevY = this.character.prevY ?? this.character.y;
-            const deltaY = this.character.y - prevY;
-
-            const isFalling = this.character.speedY > 0 || deltaY > 2; // fällt nach unten
-            const isRising = this.character.speedY < 0 || deltaY < -2;  // steigt nach oben
-
-            const stompTolerance = 20; // wie genau Pepe oben drauf springen muss
-            const standingTolerance = 5; // kleine Toleranz fürs Stehen
-
-            // --- Stomp von oben ---
-            if (!enemy.isDead && isFalling && charBottom >= enemyTop - stompTolerance && charBottom <= enemyTop + stompTolerance) {
-                enemy.die();
-                this.character.speedY = -10; // optional kleiner Bounce nach oben
-                this.character.y = enemy.y - this.character.height + 1;
-                return;
-            }
-
-            // --- Stehen auf Chicken ---
-            if (!enemy.isDead && Math.abs(charBottom - enemyTop) <= standingTolerance && !isFalling && !isRising) {
-                // Stehen, kein Schaden
-                return;
-            }
-
-            // --- Seitlicher Treffer / Schaden ---
-            if (!enemy.isDead) {
-                this.character.hit();
-                this.statusBarHealth.setPercentage(this.character.energy);
-                if (this.character.energy <= 0 && !this.character.dead) {
-                    this.character.die();
+        // Wenn Pepe auf Chicken springt
+        this.level.enemies.forEach((enemy, index) => {
+            if (enemy.isDead) return;
+            if (enemy instanceof Chicken && this.character.isColliding(enemy)) {
+                // Prüfen, ob Pepe von oben kommt (Y-Bewegung nach unten)
+                if (this.character.speedY < 0) {
+                    enemy.die(); // Chicken stirbt
+                    this.character.speedY = 20; // Pepe springt leicht nach oben
+                } else if (!enemy.isDead) {
+                    // Normale Kollision -> Schaden für Pepe
+                    this.character.hit();
+                    this.statusBarHealth.setPercentage(this.character.energy);
                 }
             }
         });
 
 
-        // --- 💀 Endboss & andere Gegner ---
         this.level.enemies.forEach((enemy) => {
-            if (enemy instanceof Chicken) return; // schon oben behandelt
-
-            // Endboss Kollision → Sofort Tod
+if (enemy.isDead) return;
+            // Wenn Endboss getroffen und Charakter stirbt
             if (enemy instanceof Endboss && this.character.isColliding(enemy)) {
                 if (!this.character.dead) {
                     this.statusBarHealth.setPercentage(0);
@@ -109,7 +83,9 @@ class World {
                 }
             }
 
-            // Normaler Gegner
+
+
+            // Normale Gegner
             else if (this.character.isColliding(enemy)) {
                 this.character.hit();
                 this.statusBarHealth.setPercentage(this.character.energy);
@@ -119,33 +95,36 @@ class World {
                 }
             }
 
-            // Endboss Siegbedingung
+            // Siegbedingung (Endboss tot)
             if (enemy instanceof Endboss && enemy.isDead && !this.character.dead && !this.endbossDefeated) {
-                this.endbossDefeated = true;
+                this.endbossDefeated = true; // verhindert mehrfaches Auslösen
+
+                // Nach 3 Sekunden You-Won-Endscreen starten
                 setTimeout(() => {
                     this.startYouWonSequence();
                 }, 3000);
             }
+
         });
 
-
-        // --- 🍾 Flaschen treffen Endboss ---
+        // Flaschen treffen Endboss
         this.throwableObjects.forEach((bottle, index) => {
             this.level.enemies.forEach((enemy) => {
                 if (enemy instanceof Endboss && !enemy.isDead && bottle.isColliding(enemy)) {
-                    enemy.hitByBottle();
-                    this.throwableObjects.splice(index, 1);
-                    this.statusBarEndboss.setPercentage(100 - enemy.hitCount * 20);
+                    enemy.hitByBottle(); // fügt Schaden zu
+                    this.throwableObjects.splice(index, 1); // Flasche entfernen
+                    this.statusBarEndboss.setPercentage(100 - enemy.hitCount * 20); // 5 Treffer = 0%
                 }
             });
         });
 
 
-        // --- 💰 Coins & Bottles aufsammeln ---
-        this.checkCollisionWithObjects(this.level.bottles, this.statusBarBottles, 10);
-        this.checkCollisionWithObjects(this.level.coins, this.statusBarCoins, 10);
-    }
+        // Flaschen aufsammeln
+        this.checkCollisionWithObjects(this.level.bottles, this.statusBarBottles, 10); // +10% pro Flasche
 
+        // Coins aufsammeln
+        this.checkCollisionWithObjects(this.level.coins, this.statusBarCoins, 10); // +10% pro Coin
+    }
 
 
 
