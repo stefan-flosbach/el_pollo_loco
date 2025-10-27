@@ -53,6 +53,24 @@ class World {
         });
     }
 
+    /*checkCollisionWithObjects(objects, statusBar, amount = 10) {
+        let collected = 0;
+        for (let i = objects.length - 1; i >= 0; i--) {
+            const obj = objects[i];
+            if (this.character.isColliding(obj)) {
+                // Entfernen des Objekts
+                objects.splice(i, 1);
+                collected++;
+            }
+        }
+        if (collected > 0 && statusBar) {
+            statusBar.setPercentage(Math.min(statusBar.percentage + collected * amount, 100));
+        }
+    }*/
+
+
+
+
     checkCollisions() {
 
         // Wenn Pepe auf Chicken springt
@@ -73,7 +91,7 @@ class World {
 
 
         this.level.enemies.forEach((enemy) => {
-if (enemy.isDead) return;
+            if (enemy.isDead) return;
             // Wenn Endboss getroffen und Charakter stirbt
             if (enemy instanceof Endboss && this.character.isColliding(enemy)) {
                 if (!this.character.dead) {
@@ -148,6 +166,9 @@ if (enemy.isDead) return;
 
         this.addObjectsToMap(this.level.clouds);
         this.addToMap(this.character);
+
+
+
         this.addObjectsToMap(this.level.bottles);
         this.addObjectsToMap(this.level.coins);
         this.addObjectsToMap(this.level.enemies);

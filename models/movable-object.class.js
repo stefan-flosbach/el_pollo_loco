@@ -26,7 +26,7 @@ class MovableObject extends DrawableObject {
     }
 
     // character.isColliding(chicken);
-    isColliding(mo) {
+    /*isColliding(mo) {
         // Falls offset nicht gesetzt ist, nutze 0
         const offset1 = this.offset || { top: 0, right: 0, bottom: 0, left: 0 };
         const offset2 = mo.offset || { top: 0, right: 0, bottom: 0, left: 0 };
@@ -35,7 +35,30 @@ class MovableObject extends DrawableObject {
             this.y + this.offset.top + this.height - this.offset.top - this.offset.bottom > mo.y + mo.offset.top &&
             this.x + this.offset.left < mo.x + mo.offset.left + mo.width - mo.offset.left - mo.offset.right &&
             this.y + this.offset.top < mo.y + mo.offset.top + mo.height - mo.offset.top - mo.offset.bottom;
+    }*/
+
+    isColliding(mo) {
+        const o1 = this.offset || { top: 0, right: 0, bottom: 0, left: 0 };
+        const o2 = mo.offset || { top: 0, right: 0, bottom: 0, left: 0 };
+
+        const thisLeft = this.x + o1.left;
+        const thisRight = this.x + this.width - o1.right;
+        const thisTop = this.y + o1.top;
+        const thisBottom = this.y + this.height - o1.bottom;
+
+        const moLeft = mo.x + o2.left;
+        const moRight = mo.x + mo.width - o2.right;
+        const moTop = mo.y + o2.top;
+        const moBottom = mo.y + mo.height - o2.bottom;
+
+        return thisRight > moLeft &&
+            thisLeft < moRight &&
+            thisBottom > moTop &&
+            thisTop < moBottom;
     }
+
+
+
 
     hit() {
         this.energy -= 2;
