@@ -17,7 +17,7 @@ class World {
         this.keyboard = keyboard;
         this.draw();
         this.setWorld();
-        this.run();
+        // this.run();
     }
 
     setWorld() {
@@ -26,12 +26,12 @@ class World {
         this.level.enemies.forEach(e => e.world = this);
     }
 
-    run() {
+    /*run() {
         setInterval(() => {
-
             this.checkCollisions();
-        }, 200);
-    }
+        }, 1000 / 60); // 60 FPS Kollisionserkennung
+    }*/
+
 
 
 
@@ -73,82 +73,117 @@ class World {
 
     checkCollisions() {
 
-        // Wenn Pepe auf Chicken springt
-        this.level.enemies.forEach((enemy, index) => {
+        // 🐔 Chicken-Kollisionen (Stomp + Schaden)
+        this.level.enemies.forEach(enemy => {
+
+            if (!(enemy instanceof Chicken)) return;
+            if (!this.character.isColliding(enemy)) return;
             if (enemy.isDead) return;
-            if (enemy instanceof Chicken && this.character.isColliding(enemy)) {
 
-                const wasAbove = this.character.prevY + this.character.height - this.character.offset.bottom
-                    <= enemy.y + enemy.offset.top;
+            const characterFeetPrev =
+                this.character.prevY +
+                this.character.height -
+                this.character.offset.bottom;
 
-                if (wasAbove && this.character.speedY < 0) {
-                    enemy.die();
-                    this.character.speedY = 20; // Bounce upward
-                }
-                else if (!enemy.isDead) {
-                    this.character.hit();
-                    this.statusBarHealth.setPercentage(this.character.energy);
-                }
+            const characterFeetNow =
+                this.character.y +
+                this.character.height -
+                this.character.offset.bottom;
+
+            const enemyHead =
+                enemy.y +
+                enemy.offset.top;
+
+            const stompTolerance = 15;
+
+            // ✅ muss fallen UND vorher über dem Gegner gewesen sein
+            const isFallingDown = characterFeetNow > characterFeetPrev;
+            const wasAbove = characterFeetPrev <= enemyHead + stompTolerance;
+
+            if (!this.character.hasStomped &&
+                isFallingDown &&
+                wasAbove &&
+                !this.character.isHurt()) {
+
+                enemy.die();
+                this.character.speedY = 20; // bounce!
+                this.character.hasStomped = true; // ✅ NUR 1x pro Sprung
+                return;
             }
+
+
+            // ✅ sonst Schaden mengenbegrenzt
+            if (!this.character.isHurt()) {
+                this.character.hit();
+                this.statusBarHealth.setPercentage(this.character.energy);
+            }
+
         });
 
 
-        this.level.enemies.forEach((enemy) => {
-            if (enemy.isDead) return;
-            // Wenn Endboss getroffen und Charakter stirbt
-            if (enemy instanceof Endboss && this.character.isColliding(enemy)) {
-                if (!this.character.dead) {
+
+        // 🐔 tote Chickens nach Timer entfernen (Cleanup)
+        this.level.enemies = this.level.enemies.filter(e => {
+            return !(e instanceof Chicken && e.shouldBeRemoved());
+        });
+
+
+
+        // 🦹‍♂️ Endboss Kollisionen
+        this.level.enemies.forEach(enemy => {
+            if (!(enemy instanceof Endboss)) return;
+
+            if (enemy.isDead) {
+                if (!this.endbossDefeated && !this.character.dead) {
+                    this.endbossDefeated = true;
+                    setTimeout(() => this.startYouWonSequence(), 3000);
+                }
+                return;
+            }
+
+            if (this.character.isColliding(enemy)) {
+                if (!this.character.dead && !this.character.isHurt()) {
                     this.statusBarHealth.setPercentage(0);
                     this.character.energy = 0;
                     this.character.die();
                 }
             }
-
-
-
-            // Normale Gegner
-            else if (this.character.isColliding(enemy) && !enemy.isDead && this.character.speedY >= 0) {
-                this.character.hit();
-                this.statusBarHealth.setPercentage(this.character.energy);
-
-                if (this.character.energy <= 0 && !this.character.dead) {
-                    this.character.die();
-                }
-            }
-
-            // Siegbedingung (Endboss tot)
-            if (enemy instanceof Endboss && enemy.isDead && !this.character.dead && !this.endbossDefeated) {
-                this.endbossDefeated = true; // verhindert mehrfaches Auslösen
-
-                // Nach 3 Sekunden You-Won-Endscreen starten
-                setTimeout(() => {
-                    this.startYouWonSequence();
-                }, 3000);
-            }
-
         });
 
-        // Flaschen treffen Endboss
+
+
+
+        // 🥤 Flaschen treffen Endboss
         this.throwableObjects.forEach((bottle, index) => {
-            this.level.enemies.forEach((enemy) => {
-                if (enemy instanceof Endboss && !enemy.isDead && bottle.isColliding(enemy)) {
-                    enemy.hitByBottle(); // fügt Schaden zu
-                    this.throwableObjects.splice(index, 1); // Flasche entfernen
-                    this.statusBarEndboss.setPercentage(100 - enemy.hitCount * 20); // 5 Treffer = 0%
+            this.level.enemies.forEach(enemy => {
+                if (
+                    enemy instanceof Endboss &&
+                    !enemy.isDead &&
+                    bottle.isColliding(enemy)
+                ) {
+                    enemy.hitByBottle();
+                    this.throwableObjects.splice(index, 1);
+                    this.statusBarEndboss.setPercentage(100 - enemy.hitCount * 20);
                 }
             });
         });
 
 
-        // Flaschen aufsammeln
-        this.checkCollisionWithObjects(this.level.bottles, this.statusBarBottles, 10); // +10% pro Flasche
 
-        // Coins aufsammeln
-        this.checkCollisionWithObjects(this.level.coins, this.statusBarCoins, 10); // +10% pro Coin
 
-        this.level.enemies = this.level.enemies.filter(e => {
-            return !(e instanceof Chicken && e.shouldBeRemoved());
-        });
+        // 🍾 Flaschen aufsammeln
+        this.checkCollisionWithObjects(
+            this.level.bottles,
+            this.statusBarBottles,
+            10
+        );
+
+        // 💰 Coins aufsammeln
+        this.checkCollisionWithObjects(
+            this.level.coins,
+            this.statusBarCoins,
+            10
+        );
     }
 
 
@@ -156,6 +191,8 @@ class World {
 
     draw() {
         if (this.gameStopped) return;
+
+        this.checkCollisions(); // immer mit 60 FPS prüfen
 
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 

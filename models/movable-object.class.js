@@ -6,14 +6,28 @@ class MovableObject extends DrawableObject {
     energy = 100;
     lastHit = 0;
 
-    applyGravity() {
+    /*applyGravity() {
         setInterval(() => {
             if (this.isAboveGround() || this.speedY > 0) {
                 this.y -= this.speedY
                 this.speedY -= this.acceleration;
             }
         }, 1000 / 25);
+    }*/
+
+    applyGravity() {
+        setInterval(() => {
+            if (this.isAboveGround() || this.speedY > 0) {
+                this.prevY = this.y;
+                this.y -= this.speedY;
+                this.speedY -= this.acceleration;
+            } else {
+                this.speedY = 0;
+            }
+        }, 1000 / 25);
     }
+
+
 
     isAboveGround() {
         if (this instanceof Endboss) {
@@ -60,20 +74,22 @@ class MovableObject extends DrawableObject {
 
 
 
-    hit() {
-        this.energy -= 2;
-        if (this.energy <= 0) {
-            this.energy = 0;
-        } else {
-            this.lastHit = new Date().getTime();
-        }
-    }
+ hit() {
+    if (this.isHurt()) return; // ✅ Hit nur, wenn NICHT schon verletzt!
 
-    isHurt() {
-        let timepassed = new Date().getTime() - this.lastHit; // Difference in ms
-        timepassed = timepassed / 1000; // Difference in s
-        return timepassed < 1;
+    this.energy -= 2;
+    if (this.energy <= 0) {
+        this.energy = 0;
+    } else {
+        this.lastHit = new Date().getTime(); // ✅ nur hier aktualisieren
     }
+}
+
+isHurt() {
+    const timePassed = (new Date().getTime() - this.lastHit) / 1000;
+    return timePassed < 1; // ✅ 1 Sek. Invincibility
+}
+
 
     isDead() {
         return this.energy == 0;
