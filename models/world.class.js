@@ -77,12 +77,15 @@ class World {
         this.level.enemies.forEach((enemy, index) => {
             if (enemy.isDead) return;
             if (enemy instanceof Chicken && this.character.isColliding(enemy)) {
-                // Prüfen, ob Pepe von oben kommt (Y-Bewegung nach unten)
-                if (this.character.speedY < 0) {
-                    enemy.die(); // Chicken stirbt
-                    this.character.speedY = 20; // Pepe springt leicht nach oben
-                } else if (!enemy.isDead) {
-                    // Normale Kollision -> Schaden für Pepe
+
+                const wasAbove = this.character.prevY + this.character.height - this.character.offset.bottom
+                    <= enemy.y + enemy.offset.top;
+
+                if (wasAbove && this.character.speedY < 0) {
+                    enemy.die();
+                    this.character.speedY = 20; // Bounce upward
+                }
+                else if (!enemy.isDead) {
                     this.character.hit();
                     this.statusBarHealth.setPercentage(this.character.energy);
                 }
@@ -104,7 +107,7 @@ class World {
 
 
             // Normale Gegner
-            else if (this.character.isColliding(enemy)) {
+            else if (this.character.isColliding(enemy) && !enemy.isDead && this.character.speedY >= 0) {
                 this.character.hit();
                 this.statusBarHealth.setPercentage(this.character.energy);
 
@@ -142,6 +145,10 @@ class World {
 
         // Coins aufsammeln
         this.checkCollisionWithObjects(this.level.coins, this.statusBarCoins, 10); // +10% pro Coin
+
+        this.level.enemies = this.level.enemies.filter(e => {
+            return !(e instanceof Chicken && e.shouldBeRemoved());
+        });
     }
 
 
