@@ -3,7 +3,7 @@ class Character extends MovableObject {
     hasStomped = false;
 
     height = 280;
-    y = 143; //50;
+    y = 155; //50;
     prevY = this.y;
     speed = 5;
 
