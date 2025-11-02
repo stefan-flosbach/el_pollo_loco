@@ -13,8 +13,42 @@ window.addEventListener('DOMContentLoaded', () => {
 
         // Init Game starten
         init();
+
+        initTouchControls(); // ✅ Touch-Steuerung aktiv!
     });
 });
+
+
+// Touch Controls aktivieren nach Spielstart
+function initTouchControls() {
+    const kb = keyboard;
+
+    const bindBtn = (id, prop, onPress) => {
+        const btn = document.getElementById(id);
+        btn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            kb[prop] = true;
+            if (onPress) onPress();
+        });
+        btn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            kb[prop] = false;
+        });
+    };
+
+    bindBtn('btn-left', 'LEFT');
+    bindBtn('btn-right', 'RIGHT');
+    bindBtn('btn-jump', 'UP');
+    bindBtn('btn-throw', 'D', () => {
+        if (world && world.statusBarBottles.percentage > 0) {
+            world.throwBottle();
+        }
+    });
+}
+
+
+
+
 
 function init() {
     canvas = document.getElementById('canvas');
@@ -23,6 +57,11 @@ function init() {
     console.log('My Character is', world.character);
 
 }
+
+
+
+
+
 
 window.addEventListener("keydown", (e) => {
     if (e.keyCode == 39) {
