@@ -75,19 +75,19 @@ class MovableObject extends DrawableObject {
 
 
  hit() {
-    if (this.isHurt()) return; // ✅ Hit nur, wenn NICHT schon verletzt!
+    if (this.isHurt()) return; // Hit nur, wenn NICHT schon verletzt!
 
     this.energy -= 2;
     if (this.energy <= 0) {
         this.energy = 0;
     } else {
-        this.lastHit = new Date().getTime(); // ✅ nur hier aktualisieren
+        this.lastHit = new Date().getTime(); // nur hier aktualisieren
     }
 }
 
 isHurt() {
     const timePassed = (new Date().getTime() - this.lastHit) / 1000;
-    return timePassed < 1; // ✅ 1 Sek. Invincibility
+    return timePassed < 1; // 1 Sek. Invincibility
 }
 
 

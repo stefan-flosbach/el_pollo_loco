@@ -73,7 +73,7 @@ class World {
 
     checkCollisions() {
 
-        // 🐔 Chicken-Kollisionen (Stomp + Schaden)
+        // Chicken-Kollisionen (Stomp + Schaden)
         this.level.enemies.forEach(enemy => {
 
             if (!(enemy instanceof Chicken)) return;
@@ -96,7 +96,7 @@ class World {
 
             const stompTolerance = 15;
 
-            // ✅ muss fallen UND vorher über dem Gegner gewesen sein
+            // muss fallen UND vorher über dem Gegner gewesen sein
             const isFallingDown = characterFeetNow > characterFeetPrev;
             const wasAbove = characterFeetPrev <= enemyHead + stompTolerance;
 
@@ -107,12 +107,12 @@ class World {
 
                 enemy.die();
                 this.character.speedY = 20; // bounce!
-                this.character.hasStomped = true; // ✅ NUR 1x pro Sprung
+                this.character.hasStomped = true; // NUR 1x pro Sprung
                 return;
             }
 
 
-            // ✅ sonst Schaden mengenbegrenzt
+            // sonst Schaden mengenbegrenzt
             if (!this.character.isHurt()) {
                 this.character.hit();
                 this.statusBarHealth.setPercentage(this.character.energy);
@@ -122,14 +122,14 @@ class World {
 
 
 
-        // 🐔 tote Chickens nach Timer entfernen (Cleanup)
+        // tote Chickens nach Timer entfernen (Cleanup)
         this.level.enemies = this.level.enemies.filter(e => {
             return !(e instanceof Chicken && e.shouldBeRemoved());
         });
 
 
 
-        // 🦹‍♂️ Endboss Kollisionen
+        // Endboss Kollisionen
         this.level.enemies.forEach(enemy => {
             if (!(enemy instanceof Endboss)) return;
 
@@ -153,7 +153,7 @@ class World {
 
 
 
-        // 🥤 Flaschen treffen Endboss
+        // Flaschen treffen Endboss
         this.throwableObjects.forEach((bottle, index) => {
             this.level.enemies.forEach(enemy => {
                 if (
@@ -171,14 +171,14 @@ class World {
 
 
 
-        // 🍾 Flaschen aufsammeln
+        // Flaschen aufsammeln
         this.checkCollisionWithObjects(
             this.level.bottles,
             this.statusBarBottles,
             10
         );
 
-        // 💰 Coins aufsammeln
+        // Coins aufsammeln
         this.checkCollisionWithObjects(
             this.level.coins,
             this.statusBarCoins,

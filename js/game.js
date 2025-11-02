@@ -14,7 +14,7 @@ window.addEventListener('DOMContentLoaded', () => {
         // Init Game starten
         init();
 
-        initTouchControls(); // ✅ Touch-Steuerung aktiv!
+        initTouchControls(); // Touch-Steuerung aktiv!
     });
 });
 
