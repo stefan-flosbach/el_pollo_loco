@@ -169,7 +169,10 @@ class World {
   }
 
   draw() {
-    if (this.gameStopped) return;
+      if (!gameStarted) {
+        requestAnimationFrame(() => this.draw());
+        return;
+    }
 
     this.checkCollisions(); // immer mit 60 FPS prüfen
 

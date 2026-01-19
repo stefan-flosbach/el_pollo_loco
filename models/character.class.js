@@ -99,7 +99,7 @@ class Character extends MovableObject {
     animate() {
 
         setInterval(() => {
-
+if (!gameStarted) return;
             this.prevY = this.y;
 
             if (this.isOnGround()) {
@@ -127,7 +127,7 @@ class Character extends MovableObject {
 
         setInterval(() => {
 
-            if (this.dead) return; // Wenn tot → keine weiteren Animationen
+            if (!gameStarted || this.dead) return; // Wenn tot → keine weiteren Animationen
 
             const now = Date.now();
 

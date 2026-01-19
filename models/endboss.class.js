@@ -75,6 +75,7 @@ class Endboss extends MovableObject {
     animate() {
         // Animationen wechseln
         setInterval(() => {
+            if (!gameStarted) return;
             if (this.isDead) {
                 this.img = this.imageCache[this.IMAGES_DEAD[this.IMAGES_DEAD.length - 1]];
             } else if (this.hitCount > 0 && this.hitCount < 5) {
@@ -94,6 +95,7 @@ class Endboss extends MovableObject {
 
         // Bewegungslogik bleibt, wie du sie hattest
         setInterval(() => {
+            if (!gameStarted) return;
             if (!this.world || this.isDead) return;
 
             const character = this.world.character;

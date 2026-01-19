@@ -38,6 +38,7 @@ class Chicken extends MovableObject {
     animate() {
         // Bewegung
         setInterval(() => {
+            if (!gameStarted) return;
             if (!this.isDead) {
                 this.moveLeft();
             }
@@ -45,6 +46,7 @@ class Chicken extends MovableObject {
 
         // Animationen
         setInterval(() => {
+            if (!gameStarted) return;
             if (this.isDead) {
                 this.playAnimation(this.IMAGES_DEAD);
             } else {

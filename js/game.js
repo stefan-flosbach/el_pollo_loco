@@ -1,6 +1,7 @@
 let canvas;
 let world;
 let keyboard = new Keyboard();
+let gameStarted = false;
 
 // Startscreen Button
 window.addEventListener('DOMContentLoaded', () => {
@@ -8,15 +9,15 @@ window.addEventListener('DOMContentLoaded', () => {
     const startScreen = document.getElementById('startscreen');
 
     startButton.addEventListener('click', () => {
-        // Startscreen ausblenden
         startScreen.style.display = 'none';
 
-        // Init Game starten
-        init();
+        gameStarted = true;   // ✅ jetzt darf alles laufen
 
-        initTouchControls(); // Touch-Steuerung aktiv!
+        init();
+        initTouchControls();
     });
 });
+
 
 
 // Touch Controls aktivieren nach Spielstart
