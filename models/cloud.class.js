@@ -44,6 +44,7 @@ class Cloud extends MovableObject {
 
     animate() {
         setInterval(() => {
+            if (!gameStarted) return;
             this.moveLeft();
 
             // Wenn Wolke ganz links raus ist, wieder rechts einsetzen

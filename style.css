@@ -70,6 +70,26 @@ h2 {
     display: flex;
 }
 
+#restartBtn {
+  position: absolute;
+  left: 50%;
+  top: 75%;
+  transform: translate(-50%, -50%);
+  padding: 14px 32px;
+  font-size: 22px;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border: 2px solid white;
+  border-radius: 8px;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+#restartBtn:active {
+  transform: translate(-50%, -50%) scale(0.95);
+}
+
+
 canvas {
     background-color: black;
     display: block;

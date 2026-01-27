@@ -1,4 +1,7 @@
 class World {
+  animationFrame = null;
+  gameStopped = false;
+
   character = new Character();
   level = level1;
   canvas;
@@ -169,18 +172,16 @@ class World {
   }
 
   draw() {
-      if (!gameStarted) {
-        requestAnimationFrame(() => this.draw());
-        return;
+    if (!gameStarted || this.gameStopped) {
+      return; // 🔴 STOPPT ALLES
     }
 
-    this.checkCollisions(); // immer mit 60 FPS prüfen
+    this.checkCollisions();
 
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     this.ctx.translate(this.camera_x, 0);
 
-    // 🌥 Wolken bewegen:
     this.level.clouds.forEach((cloud) => {
       cloud.moveLeft();
       if (cloud.x < -cloud.width) {
@@ -189,29 +190,24 @@ class World {
     });
 
     this.addObjectsToMap(this.level.backgroundObjects);
-
     this.addObjectsToMap(this.level.clouds);
     this.addToMap(this.character);
-
     this.addObjectsToMap(this.level.bottles);
     this.addObjectsToMap(this.level.coins);
     this.addObjectsToMap(this.level.enemies);
     this.addObjectsToMap(this.throwableObjects);
 
-    this.ctx.translate(-this.camera_x, 0); // Back
+    this.ctx.translate(-this.camera_x, 0);
+
     this.addToMap(this.statusBarHealth);
     this.addToMap(this.statusBarBottles);
     this.addToMap(this.statusBarCoins);
     this.addToMap(this.statusBarEndboss);
-    this.ctx.translate(this.camera_x, 0); // Forwards
 
+    this.ctx.translate(this.camera_x, 0);
     this.ctx.translate(-this.camera_x, 0);
 
-    // Draw() wird immer wieder aufgerufen
-    let self = this; // in diesem speziellen Fall funktioniert this. nicht. Daher eine Variable damit zuordnen.
-    requestAnimationFrame(function () {
-      self.draw();
-    });
+    this.animationFrame = requestAnimationFrame(() => this.draw());
   }
 
   addObjectsToMap(objects) {
@@ -282,6 +278,8 @@ class World {
     if (this.gameStopped) return;
     this.gameStopped = true;
 
+    cancelAnimationFrame(this.animationFrame);
+
     // Kleiner Moment warten, bis Pepe unten sichtbar ist
     setTimeout(() => {
       this.fadeInScreen("../img/You won, you lost/You lost.png", () => {
@@ -301,6 +299,8 @@ class World {
   startYouWonSequence() {
     if (this.gameStopped) return;
     this.gameStopped = true;
+
+    cancelAnimationFrame(this.animationFrame);
 
     // You won anzeigen
     this.fadeInScreen("../img/You won, you lost/You won A.png", () => {
@@ -353,6 +353,22 @@ class World {
   // Zeigt einen Restart-Button auf dem Canvas an.
 
   showRestartButton() {
+    const btn = document.getElementById("restartBtn");
+    if (!btn) return;
+
+    btn.style.display = "block";
+
+    btn.onclick = () => {
+      window.location.reload();
+    };
+  }
+
+  /* showRestartButton() {
+    const touchControls = document.getElementById("touch-controls");
+    if (touchControls) {
+      touchControls.style.display = "none";
+    }
+
     const baseWidth = 160;
     const baseHeight = 50;
     const growScale = 1.1;
@@ -448,8 +464,32 @@ class World {
       }
     };
 
+    const handleTouch = (event) => {
+      event.preventDefault();
+
+      const rect = this.canvas.getBoundingClientRect();
+      const touch = event.touches[0];
+
+      const touchX = touch.clientX - rect.left;
+      const touchY = touch.clientY - rect.top;
+
+      const width = baseWidth * currentScale;
+      const height = baseHeight * currentScale;
+      const x = this.canvas.width / 2 - width / 2;
+
+      if (
+        touchX >= x &&
+        touchX <= x + width &&
+        touchY >= y &&
+        touchY <= y + height
+      ) {
+        window.location.reload();
+      }
+    };
+
     // Event Listener
     this.canvas.addEventListener("mousemove", handleMouseMove);
     this.canvas.addEventListener("click", handleClick, { once: true });
-  }
+    this.canvas.addEventListener("touchstart", handleTouch, { once: true });
+  } */
 }
