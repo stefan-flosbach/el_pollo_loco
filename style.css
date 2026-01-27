@@ -178,3 +178,38 @@ canvas {
         display: none;
     }
 }
+
+/* Overlay für Hochformat */
+#rotate-overlay {
+    position: fixed;
+    inset: 0;
+    background: black;
+    color: white;
+    display: none;
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+/* Text */
+.rotate-message {
+    font-size: 28px;
+    line-height: 1.4;
+    font-family: Arial, sans-serif;
+}
+
+/* 📱 NUR im Hochformat anzeigen */
+@media screen and (orientation: portrait) {
+    #rotate-overlay {
+        display: flex;
+    }
+
+    canvas,
+    #touch-controls,
+    #startscreen,
+    h1,
+    h2 {
+        display: none !important;
+    }
+}
